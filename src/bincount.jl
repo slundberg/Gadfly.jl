@@ -152,8 +152,9 @@ function choose_bin_count_1d_discrete(xs::AbstractArray, xs_set::AbstractArray,
     pll_best = -Inf
     bincounts = zeros(Int, d_max)
     for d in d_min:d_max
-        binwidth = span / d
-        binwidth = ceil(binwidth / mingap) * mingap # round to a multiple of mingap
+
+        # round to a multiple of mingap if it is not zero
+        binwidth = mingap > 0 ? ceil(span / d / mingap) * mingap : span / d
 
         # don't bother with binning that stretches past the end of the data
         if binwidth == mingap && x_min + binwidth * (d - 1) > x_max
@@ -177,7 +178,7 @@ function choose_bin_count_1d_discrete(xs::AbstractArray, xs_set::AbstractArray,
     end
 
     d = d_best
-    binwidth = ceil(span / d / mingap) * mingap
+    binwidth = mingap > 0 ? ceil(span / d / mingap) * mingap : span / d
     x_max = x_min + binwidth * d
     bincounts[1:d_best] = 0
     for x in xs
